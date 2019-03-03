@@ -11,8 +11,18 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  message_generation
   tcp_client
+  topic_priority
+  human_driver_monitor
+  pcl_ros
+  interactive_markers
+  kfilter
 )
+
+find_package(PkgConfig REQUIRED)
+
+pkg_check_modules(GTKMM gtkmm-3.0)
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -48,11 +58,17 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
-# add_message_files(
-#   FILES
-#   Message1.msg
-#   Message2.msg
-# )
+add_message_files(
+   FILES
+   GearBoxCommand.msg
+   ManagerCommand.msg
+   PlcCommand.msg
+   ThrottleCommand.msg
+   GearboxStatus.msg
+   ManagerStatus.msg
+   PlcStatus.msg
+   ThrottleStatus.msg
+)
 
 ## Generate services in the 'srv' folder
 # add_service_files(
@@ -69,10 +85,10 @@ find_package(catkin REQUIRED COMPONENTS
 # )
 
 ## Generate added messages and services with any dependencies listed here
-# generate_messages(
-#   DEPENDENCIES
-#   std_msgs
-# )
+generate_messages(
+   DEPENDENCIES
+   std_msgs
+)
 
 ################################################
 ## Declare ROS dynamic reconfigure parameters ##
@@ -104,9 +120,9 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
+  INCLUDE_DIRS include
 #  LIBRARIES atlascar_base
-  CATKIN_DEPENDS roscpp rospy std_msgs tcp_client
+  CATKIN_DEPENDS roscpp rospy std_msgs message_runtime tcp_client topic_priority human_driver_monitor pcl_ros interactive_markers kfilter
 #  DEPENDS system_lib
 )
 
@@ -117,7 +133,7 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
+  include
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -130,11 +146,23 @@ include_directories(
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
 # add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(state_example atlascar_base_generate_messages_cpp)
+# add_dependencies(odometry atlascar_base_generate_messages_cpp)
+add_dependencies(plc atlascar_base_generate_messages_cpp)
+add_dependencies(throttle atlascar_base_generate_messages_cpp)
+add_dependencies(gearbox atlascar_base_generate_messages_cpp)
+add_dependencies(manager atlascar_base_generate_messages_cpp)
 
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
 # add_executable(${PROJECT_NAME}_node src/atlascar_base_node.cpp)
+add_executable(state_example src/state_example.cpp)
+# add_executable(odometry src/odometry.cpp)
+add_executable(plc src/plc_node.cpp src/plc.cpp)
+add_executable(throttle src/throttle_node.cpp src/throttle.cpp)
+add_executable(gearbox src/gearbox_node.cpp src/gearbox.cpp)
+add_executable(manager src/manager_node.cpp src/manager.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -150,6 +178,35 @@ include_directories(
 # target_link_libraries(${PROJECT_NAME}_node
 #   ${catkin_LIBRARIES}
 # )
+
+target_link_libraries(state_example ${catkin_LIBRARIES})
+# target_link_libraries(odometry ${catkin_LIBRARIES})
+target_link_libraries(plc ${catkin_LIBRARIES})
+target_link_libraries(throttle ${catkin_LIBRARIES})
+target_link_libraries(gearbox ${catkin_LIBRARIES})
+target_link_libraries(manager ${catkin_LIBRARIES})
+
+if(GTKMM_FOUND)
+    include_directories(${GTKMM_INCLUDE_DIRS} ${catkin_INCLUDE_DIRS})
+
+    add_executable(manager_gui src/manager_gui.cpp src/manager_gui_node.cpp)
+    add_executable(maneuvers src/maneuvers.cpp  src/maneuvers_node.cpp)
+
+    add_dependencies(manager_gui atlascar_base_generate_messages_cpp)
+    add_dependencies(maneuvers atlascar_base_generate_messages_cpp)
+
+    target_link_libraries(manager_gui ${catkin_LIBRARIES} ${GTKMM_LIBRARIES})
+    target_link_libraries(maneuvers ${catkin_LIBRARIES} ${GTKMM_LIBRARIES})
+else()
+    message(WARNING "Gtkmm and Sigc++ not installed, manager_gui will not be built!, if the GUI is required, please install the gtkmm lib using: sudo apt-get install libgtkmm-3.0-dev libsigc++-2.0-dev")
+endif()
+
+find_package(LibXml2 REQUIRED LibXml2)
+
+include_directories(${LIBXML2_INCLUDE_DIR} ${catkin_INCLUDE_DIRS})
+add_executable(show_axes src/show_axes.cpp)
+add_dependencies(show_axes atlascar_base_generate_messages_cpp)
+target_link_libraries(show_axes ${catkin_LIBRARIES} ${LIBXML2_LIBRARIES})
 
 #############
 ## Install ##
