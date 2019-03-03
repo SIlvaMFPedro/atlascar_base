@@ -59,8 +59,26 @@
   <exec_depend>rospy</exec_depend>
   <exec_depend>std_msgs</exec_depend>
 
+  <build_depend>message_generation</build_depend>
+  <build_export_depend>message_generation</build_export_depend>
+
   <build_depend>tcp_client</build_depend>
   <build_export_depend>tcp_client</build_export_depend>
+
+  <build_depend>topic_priority</build_depend>
+  <build_export_depend>topic_priority</build_export_depend>
+
+  <build_depend>human_driver_monitor</build_depend>
+  <build_export_depend>human_driver_monitor</build_export_depend>
+
+  <build_depend>pcl_ros</build_depend>
+  <build_export_depend>pcl_ros</build_export_depend>
+
+  <build_depend>interactive_markers</build_depend>
+  <build_export_depend>interactive_markers</build_export_depend>
+
+  <build_depend>kfilter</build_depend>
+  <build_export_depend>kfilter</build_export_depend>
 
 
   <!-- The export tag contains other, unspecified, tags -->
