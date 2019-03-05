@@ -60,7 +60,7 @@ pkg_check_modules(GTKMM gtkmm-3.0)
 ## Generate messages in the 'msg' folder
 add_message_files(
    FILES
-   GearBoxCommand.msg
+   GearboxCommand.msg
    ManagerCommand.msg
    PlcCommand.msg
    ThrottleCommand.msg
@@ -146,12 +146,6 @@ include_directories(
 ## as an example, code may need to be generated before libraries
 ## either from message generation or dynamic reconfigure
 # add_dependencies(${PROJECT_NAME} ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-add_dependencies(state_example atlascar_base_generate_messages_cpp)
-# add_dependencies(odometry atlascar_base_generate_messages_cpp)
-add_dependencies(plc atlascar_base_generate_messages_cpp)
-add_dependencies(throttle atlascar_base_generate_messages_cpp)
-add_dependencies(gearbox atlascar_base_generate_messages_cpp)
-add_dependencies(manager atlascar_base_generate_messages_cpp)
 
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
@@ -173,6 +167,12 @@ add_executable(manager src/manager_node.cpp src/manager.cpp)
 ## Add cmake target dependencies of the executable
 ## same as for the library above
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(state_example atlascar_base_generate_messages_cpp)
+# add_dependencies(odometry atlascar_base_generate_messages_cpp)
+add_dependencies(plc atlascar_base_generate_messages_cpp)
+add_dependencies(throttle atlascar_base_generate_messages_cpp)
+add_dependencies(gearbox atlascar_base_generate_messages_cpp)
+add_dependencies(manager atlascar_base_generate_messages_cpp)
 
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(${PROJECT_NAME}_node
